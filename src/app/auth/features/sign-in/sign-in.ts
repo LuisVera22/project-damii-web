@@ -64,7 +64,7 @@ export default class SignIn {
     try {
       await this._authService.signInWithGoogle();
       toast.success('Bienvenido denuevo');
-      this._router.navigateByUrl('/tasks');
+      this._router.navigateByUrl('/chat');
     } catch (error) {
       toast.error('Ocurrio un error');
     }

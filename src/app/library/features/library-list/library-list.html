@@ -1,0 +1,107 @@
+<div class="min-h-100 flex justify-center p-6">
+  <div class="w-full max-w-4xl space-y-6">
+    <!-- Título -->
+    <h1 class="text-3xl font-semibold text-center tracking-tight drop-shadow-sm">BIBLIOTECA VIRTUAL</h1>
+
+    <!-- Breadcrumb -->
+    <div class="text-sm text-slate-300 flex items-center gap-1">
+      <button class="hover:underline cursor-pointer" (click)="volverAlInicio()">Biblioteca DAMII</button>
+
+      <ng-container *ngFor="let carpeta of breadcrumb; let i = index">
+        <span>/</span>
+        <button
+          *ngIf="esCarpeta(carpeta)"
+          (click)="abrirCarpeta(carpeta)"
+          [disabled]="loading"
+          class="truncate text-left hover:underline text-slate-100 disabled:opacity-50 cursor-pointer"
+        >
+          {{ carpeta.nombre }}
+        </button>
+      </ng-container>
+    </div>
+
+    <!-- Card principal -->
+    <div class="space-y-4">
+      <!-- Error -->
+      <div
+        *ngIf="error"
+        class="rounded-xl bg-red-500/10 border border-red-500/50 px-4 py-3 text-sm text-red-200"
+      >
+        {{ error }}
+      </div>
+
+      <!-- Cargando inicial -->
+      <div *ngIf="loading && archivos.length === 0" class="text-center text-sm text-slate-400">
+        Cargando archivos…
+      </div>
+
+      <!-- Lista -->
+      <div
+        *ngIf="archivos.length > 0"
+        class="rounded-xl bg-slate-900/60 border border-slate-700 overflow-hidden"
+      >
+        <!-- Header tabla -->
+        <div
+          class="grid grid-cols-12 px-4 py-2 text-xs font-medium text-slate-400 border-b border-slate-700 bg-slate-900/80"
+        >
+          <div class="col-span-9">Nombre</div>
+          <div class="col-span-3 text-right">Modificado</div>
+        </div>
+
+        <!-- Filas -->
+        <div
+          *ngFor="let archivo of archivos"
+          class="grid grid-cols-12 px-4 py-3 text-sm items-center border-b border-slate-800 last:border-b-0 hover:bg-slate-800/70 hover:border-green-500/40 transition-all"
+        >
+          <!-- Nombre + icono -->
+          <div class="col-span-9 flex items-center gap-2">
+            <img *ngIf="archivo.icono" [src]="archivo.icono" alt="icono" class="w-5 h-5" />
+
+            <!-- Si es carpeta: botón que navega -->
+            <button
+              *ngIf="esCarpeta(archivo)"
+              (click)="abrirCarpeta(archivo)"
+              class="truncate text-left text-slate-100 cursor-pointer"
+            >
+              {{ archivo.nombre }}
+            </button>
+
+            <!-- Si es archivo: link que abre Drive en nueva pestaña -->
+            <a
+              *ngIf="!esCarpeta(archivo)"
+              [href]="archivo.vistaWeb"
+              target="_blank"
+              class="truncate text-slate-100 cursor-pointer"
+            >
+              {{ archivo.nombre }}
+            </a>
+          </div>
+
+          <!-- Fecha -->
+          <div class="col-span-3 text-right text-xs text-slate-400">
+            {{ archivo.modificado | date : 'short' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Sin archivos -->
+      <div
+        *ngIf="!loading && archivos.length === 0 && !error"
+        class="text-center text-sm text-slate-400 py-6"
+      >
+        No se encontraron archivos para mostrar.
+      </div>
+
+      <!-- Botón cargar más -->
+      <div class="flex justify-center pt-2" *ngIf="nextPageToken">
+        <button
+          (click)="cargarArchivos(true)"
+          [disabled]="loading"
+          class="bg-green-600 hover:bg-green-500 disabled:opacity-60 disabled:cursor-not-allowed rounded-xl px-5 py-2 text-sm font-medium transition-all shadow-lg hover:shadow-green-500/20"
+        >
+          {{ loading ? 'Cargando…' : 'Cargar más' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

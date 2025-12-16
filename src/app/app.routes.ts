@@ -9,12 +9,24 @@ export const routes: Routes = [
   },
   {
     canActivateChild: [privateGuard()],
-    path: 'tasks',
+    path: 'chat',
     loadComponent: () => import('./shared/ui/layout.component'),
-    loadChildren: () => import('./task/features/task.routes'),
+    loadChildren: () => import('./search/features/search.routes'),
+  },
+  {
+    canActivateChild: [privateGuard()],
+    path: 'biblioteca',
+    loadComponent: () => import('./shared/ui/layout.component'),
+    loadChildren: () => import('./library/features/library.routes'),
+  },
+  {
+    canActivateChild: [privateGuard()],
+    path: 'analíticas',
+    loadComponent: () => import('./shared/ui/layout.component'),
+    loadChildren: () => import('./analytics/features/analytics.routes'),
   },
   {
     path: '**',
-    redirectTo: '/tasks',
+    redirectTo: 'biblioteca',
   },
 ];
