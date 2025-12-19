@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8081'
+  apiUrl: 'https://project-damii-service-203924237142.us-central1.run.app'
 };
