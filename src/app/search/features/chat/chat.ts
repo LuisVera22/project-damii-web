@@ -3,8 +3,8 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  inject,
   NgZone,
+  inject,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { finalize } from 'rxjs/operators';
@@ -17,15 +17,18 @@ export interface BusquedaRequest {
 
 export interface Archivo {
   id: string;
-  name: string;
-  webViewLink: string;
-  mimeType: string;
+  title: string;
+  link: string;
+  score: number;
+  reason: string;
 }
 
 export interface BusquedaResponse {
-  archivos: Archivo[];
-  ok: boolean;
+  status: string;
   total: number;
+  query: string;
+  answer: string;
+  files: Archivo[];
 }
 
 @Component({
@@ -34,9 +37,7 @@ export interface BusquedaResponse {
   imports: [CommonModule, FormsModule],
   templateUrl: './chat.html',
   styles: ``,
-  host: {
-    ngSkipHydration: 'true',
-  },
+  host: { ngSkipHydration: 'true' },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export default class Chat {
@@ -50,62 +51,75 @@ export default class Chat {
   busquedaEjecutada = false;
   huboError = false;
 
-  onBuscar() {
-    const q = this.query.trim();
-    if (!q) {
-      // Toast fuera de Angular para que no meta ruido en CD
-      this.ngZone.runOutsideAngular(() => {
-        toast.info('Escribe una consulta antes de buscar');
-      });
-      return;
-    }
 
-    // Estado inicial
-    this.loading = true;
-    this.resultado = null;
-    this.busquedaEjecutada = true;
-    this.huboError = false;
-    this.cdr.markForCheck();
+  private loadingToastId: string | number | null = null;
 
-    this.ngZone.runOutsideAngular(() => {
-      toast.loading('Buscando…');
-    });
-
-    this.busquedaService
-      .buscar(q)
-      .pipe(
-        finalize(() => {
-          this.loading = false;
-          this.cdr.markForCheck();
-        })
-      )
-      .subscribe({
-        next: (res) => {
-          this.ngZone.run(() => {
-            this.resultado = res;
-            this.cdr.markForCheck();
-          });
-
-          this.ngZone.runOutsideAngular(() => {
-            if (res.total > 0) {
-              toast.success(`Se encontraron ${res.total} documento(s)`);
-            } else {
-              toast.info('No se encontraron documentos');
-            }
-          });
-        },
-        error: (err) => {
-          console.error(err);
-          this.ngZone.run(() => {
-            this.resultado = null;
-            this.huboError = true;
-            this.cdr.markForCheck();
-          });
-
-          this.ngZone.runOutsideAngular(() => {
-            toast.error('Error realizando la búsqueda');
-          });
-        },
-      });
+onBuscar() {
+  const q = this.query.trim();
+  if (!q) {
+    toast.info('Escribe una consulta antes de buscar');
+    return;
   }
+
+  this.loading = true;
+  this.resultado = null;
+  this.busquedaEjecutada = true;
+  this.huboError = false;
+  this.cdr.markForCheck();
+
+  this.loadingToastId = toast.loading('Buscando…');
+
+  this.busquedaService
+    .buscar(q)
+    .pipe(
+      finalize(() => {
+        if (this.loadingToastId != null) {
+          toast.dismiss(this.loadingToastId);
+          this.loadingToastId = null;
+        }
+
+        this.ngZone.run(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        });
+      })
+    )
+    .subscribe({
+      next: (res) => {
+        const safe = {
+          status: res?.status ?? 'ok',
+          total: Number(res?.total ?? 0),
+          query: res?.query ?? q,
+          answer: res?.answer ?? '',
+          files: Array.isArray(res?.files) ? res.files : [],
+        };
+
+        this.ngZone.run(() => {
+          this.resultado = safe;
+          this.cdr.markForCheck();
+        });
+
+        if (safe.total > 0) toast.success(`Se encontraron ${safe.total} documento(s)`);
+        else toast.info('No se encontraron documentos');
+      },
+      error: (err) => {
+        console.error(err);
+
+        this.ngZone.run(() => {
+          this.resultado = {
+            status: 'error',
+            total: 0,
+            query: q,
+            answer: 'Ocurrió un error realizando la búsqueda.',
+            files: [],
+          };
+          this.huboError = true;
+          this.cdr.markForCheck();
+        });
+
+        toast.error('Error realizando la búsqueda');
+      },
+    });
+}
+
 }
