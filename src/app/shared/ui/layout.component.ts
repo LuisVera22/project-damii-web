@@ -82,14 +82,14 @@ import { NgClass, NgIf } from '@angular/common';
         <!-- Navegación -->
         <nav class="flex-1 space-y-1 w-full">
           <a
-            routerLink="/analiticas"
+            routerLink="/usuarios"
             routerLinkActive="bg-slate-800/70 text-green-400 border-l-2 border-green-500"
             class="block px-3 py-2 rounded-lg text-sm text-slate-300
                hover:bg-slate-800/60 hover:text-green-400 transition-colors
                font-medium"
                disabled
           >
-            Analíticas
+            Usuarios
           </a>
 
           <a

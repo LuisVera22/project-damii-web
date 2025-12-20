@@ -21,12 +21,12 @@ export const routes: Routes = [
   },
   {
     canActivateChild: [privateGuard()],
-    path: 'analíticas',
+    path: 'usuarios',
     loadComponent: () => import('./shared/ui/layout.component'),
-    loadChildren: () => import('./analytics/features/analytics.routes'),
+    loadChildren: () => import('./user/features/user.routes'),
   },
   {
     path: '**',
-    redirectTo: 'biblioteca',
+    redirectTo: 'usuarios',
   },
 ];
