@@ -9,8 +9,11 @@ import { NgClass, NgIf } from '@angular/common';
   imports: [RouterModule, RouterLink, RouterLinkActive, RouterOutlet, NgClass, NgIf],
   template: `
     <div
-      class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900
-         text-slate-100 flex relative transition-all duration-500"
+      class="min-h-screen flex relative text-slate-100 transition-all duration-500
+            bg-gradient-to-br
+            from-[#081B2E]
+            via-[#0C2846]
+            to-[#1F6F85]"
     >
       <!-- BOTÓN SIEMPRE VISIBLE -->
       <button
@@ -59,18 +62,21 @@ import { NgClass, NgIf } from '@angular/common';
 
       <!-- SIDEBAR -->
       <aside
-        class="bg-slate-900/60 backdrop-blur-xl border-r border-slate-700
-           flex flex-col p-6 overflow-hidden transition-all duration-500
-           shadow-xl rounded-r-2xl"
+        class="bg-gradient-to-br
+            from-[#0C2846]
+            via-[#0C2846]
+            to-[#081B2E]
+              backdrop-blur-xl border-r border-white/10
+              flex flex-col p-6 overflow-hidden transition-all duration-500
+              shadow-2xl rounded-r-2xl"
         [ngClass]="isSidebarOpen ? 'w-64 opacity-100' : 'w-0 opacity-0'"
       >
         <!-- Branding -->
         <div class="mb-8 flex flex-col items-center">
           <img
-            src="img/logo.png"
-            class="w-32 h-auto mb-3 opacity-90 drop-shadow-[0_0_22px_rgba(255,255,255,0.3)]"
+            src="img/logo-white.png"
+            class="w-32 h-auto mb-3"
           />
-          <p class="text-xs uppercase tracking-[0.09em] text-slate-400 font-bold">BIBLIOTECA VIRTUAL</p>
         </div>
 
         <!-- Navegación -->
