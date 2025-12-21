@@ -12,6 +12,9 @@ import { isRequired, hasEmailError } from '../../utils/validators';
 import { GoogleButtonComponent } from '../../ui/google-button/google-button.component';
 
 interface FormSignUp {
+  firstName: FormControl<string | null>;
+  lastName: FormControl<string | null>;
+  role: FormControl<string | null>;
   email: FormControl<string | null>;
   password: FormControl<string | null>;
 }
@@ -27,7 +30,7 @@ export default class SignUp {
   private _authService = inject(AuthService);
   private _router = inject(Router);
 
-  isRequired(field: 'email' | 'password') {
+  isRequired(field: 'firstName' | 'lastName' | 'role' | 'email' | 'password') {
     return isRequired(field, this.form);
   }
 
@@ -36,6 +39,9 @@ export default class SignUp {
   }
 
   form = this._formBuilder.group<FormSignUp>({
+    firstName: this._formBuilder.control('', Validators.required),
+    lastName: this._formBuilder.control('', Validators.required),
+    role: this._formBuilder.control('', Validators.required),
     email: this._formBuilder.control('', [
       Validators.required,
       Validators.email,
@@ -47,11 +53,17 @@ export default class SignUp {
     if (this.form.invalid) return;
 
     try {
-      const { email, password } = this.form.value;
+      const { firstName, lastName, role, email, password } = this.form.value;
 
-      if (!email || !password) return;
+      if (!firstName || !lastName || !role || !email || !password) return;
 
-      await this._authService.signUp({ email, password });
+      await this._authService.signUp({
+        firstName,
+        lastName,
+        role,
+        email,
+        password,
+      });
 
       toast.success('Usuario creado correctamente');
       this._router.navigateByUrl('/tasks');

@@ -1,4 +1,6 @@
 import { TestBed } from '@angular/core/testing';
+import { Auth } from '@angular/fire/auth';
+import { Firestore } from '@angular/fire/firestore';
 
 import { AuthService } from './auth.service';
 
@@ -6,7 +8,12 @@ describe('AuthService', () => {
   let service: AuthService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [
+        { provide: Auth, useValue: {} },
+        { provide: Firestore, useValue: {} },
+      ],
+    });
     service = TestBed.inject(AuthService);
   });
 
